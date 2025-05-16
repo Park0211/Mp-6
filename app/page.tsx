@@ -1,7 +1,7 @@
 "use client";
 export default function Home() {
   const clientId = process.env.NEXT_PUBLIC_GITHUB_ID!;
-  const redirectUri = "http://localhost:3000/callback/github";
+  const redirectUri = "/callback/github";
 
   const handleLogin = () => {
     const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=read:user&prompt=consent`;
