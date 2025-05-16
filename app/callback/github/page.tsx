@@ -1,12 +1,33 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
+// type "any" is not allowed
+type User = {
+  avatar_url: string;
+  login: string;
+}
+
+// export default function GithubCallback({searParams} : {searchParams: code: string})
+// above code is not available (Promise is required)
+// this page is client-side page, so async-Promise cannot be used
+
+// useSearchParams should be wrappend in a suspense boundary but we haven't learnt it yet.
 export default function GithubCallback() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const code = searchParams.get("code");
-  const [user, setUser] = useState<any>(null);
+  // code where type "User" is in used
+  const [user, setUser] = useState<User | null>(null);
+  const [code, setCode] = useState<string | null>(null);
+
+  // this is the right way to get parameters from url without using searchParams
+  useEffect(() =>{
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const tempCode = params.get("code")
+      setCode(tempCode)
+    }
+  }, [])
 
   useEffect(() => {
     async function fetchUserInfo() {
@@ -47,11 +68,7 @@ export default function GithubCallback() {
 
   return (
     <div className="h-screen flex flex-col items-center justify-center bg-green-100">
-      <img
-        src={user.avatar_url}
-        alt="User Avatar"
-        className="w-32 h-32 rounded-full mb-4"
-      />
+      <Image src={user.avatar_url} width={80} height={80} alt="User Avatar" className="rounded-full mb-4" />
       <h2 className="text-2xl font-bold mb-4">{user.login}</h2>
       <p className="text-gray-600 text-lg">Signed with GitHub</p>
     </div>
